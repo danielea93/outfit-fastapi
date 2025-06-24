@@ -1,0 +1,16 @@
+{
+  "Bdmin": -1,
+  "Bdmax": 1,
+  "Cd": 2,
+  "Wd_rules": [
+    {"min": 30, "max": 1000, "Wd": 0},
+    {"min": 25, "max": 30, "Wd": 1},
+    {"min": 20, "max": 25, "Wd": 2},
+    {"min": 15, "max": 20, "Wd": 3},
+    {"min": 10, "max": 15, "Wd": 4},
+    {"min": 5, "max": 10, "Wd": 5},
+    {"min": -1000, "max": 5, "Wd": 6}
+  ],
+  "location": "Milan,IT",
+  "openweather_api_key": "f342b4d6c825894a8c70b84de6fc54cb"
+}

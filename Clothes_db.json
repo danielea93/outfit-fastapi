@@ -1,0 +1,36 @@
+{
+  "Layer 1": [
+    {"name": "black t shirt", "B": 0, "C": 0, "W": 0},
+    {"name": "grey t shirt", "B": 0, "C": 0, "W": 0},
+    {"name": "black white contrast stitching t shirt", "B": 0, "C": 0, "W": 0},
+    {"name": "dark grey melange t shirt", "B": 0, "C": 0, "W": 0}
+  ],
+  "Layer 2": [
+    {"name": "nothing", "B": 0, "C": 0, "W": 0},
+    {"name": "black t shirt", "B": 0, "C": 0, "W": 1},
+    {"name": "grey t shirt", "B": 0, "C": 0, "W": 1},
+    {"name": "black white contrast stitching t shirt", "B": 0, "C": 0, "W": 1},
+    {"name": "white polo", "B": 0, "C": 0, "W": 1},
+    {"name": "black polo", "B": 0, "C": 0, "W": 1},
+    {"name": "grey polo", "B": 0, "C": 0, "W": 1},
+    {"name": "dark grey melange polo", "B": 0, "C": 0, "W": 1}
+  ],
+  "Pants": [
+    {"name": "light wash blue denim", "B": 0, "C": 0, "W": 0},
+    {"name": "medium wash blue denim", "B": 0, "C": 0, "W": 0},
+    {"name": "dark wash blue denim", "B": 0, "C": 0, "W": 0}
+  ],
+  "Accessories": [
+    {"name": "nothing", "B": 0, "C": 0, "W": 0},
+    {"name": "glasses", "B": 0, "C": 1, "W": 0},
+    {"name": "sunglasses", "B": 0, "C": 1, "W": 0},
+    {"name": "headband", "B": 0, "C": 1, "W": 0},
+    {"name": "bandana", "B": 1, "C": 1, "W": 0},
+    {"name": "bag", "B": 0, "C": 1, "W": 0}
+  ],
+  "Shoes": [
+    {"name": "buckle winklepickers", "B": -1, "C": 1, "W": 0},
+    {"name": "square toe loafers", "B": -1, "C": 1, "W": 0},
+    {"name": "pointy chelsea boots", "B": -1, "C": 1, "W": 0}
+  ]
+}

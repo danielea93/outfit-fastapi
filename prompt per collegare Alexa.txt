@@ -1,0 +1,16 @@
+Ciao, ho sviluppato un'applicazione in Python con FastAPI che genera outfit in base ai vestiti che possiedo. Lo script legge da due file JSON (config.json e clothes_db.json), filtra le combinazioni in base a regole definite (Bdmin, Bdmax, Cd, Wd) e restituisce un elenco di outfit validi.
+
+Attualmente l'endpoint /get-outfits restituisce un JSON con stringhe tipo:
+1. black t shirt, light wash blue denim, buckle winklepickers
+
+Vorrei collegare questa API ad Alexa, in modo che possa dire: "Alexa, suggeriscimi un outfit" e vedere la lista sul mio Echo Show.
+
+Mi servirebbe aiuto per:
+
+Creare e configurare correttamente una Alexa Skill
+
+Gestire l’intent e collegarlo alla mia API pubblica (posso usare ngrok per HTTPS)
+
+Rispondere con testo e, se possibile, mostrare i risultati sul display dell’Echo Show usando APL (Alexa Presentation Language)
+
+Fammi vedere il codice e i passaggi necessari, sia lato Alexa Developer Console che lato FastAPI.
