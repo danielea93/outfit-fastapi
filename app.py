@@ -1,3 +1,12 @@
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+import json
+import itertools
+import requests
+
+# La tua app FastAPI deve essere definita prima dei decoratori
+app = FastAPI()
+
 @app.post("/alexa")
 async def handle_alexa_request(request: Request):
     body = await request.json()
@@ -144,7 +153,7 @@ async def handle_alexa_request(request: Request):
                         "shouldEndSession": True
                     }
                 }
-                print("Risposta Alexa:", json.dumps(response, indent=2))
+                print("Errore Alexa:", json.dumps(response, indent=2))
                 return JSONResponse(content=response)
 
         else:
