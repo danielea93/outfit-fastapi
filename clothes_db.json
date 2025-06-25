@@ -25,7 +25,8 @@
     {"name": "occhiali da vista", "B": 0, "C": 1, "W": 0},
     {"name": "occhiali da sole", "B": 0, "C": 1, "W": 0},
     {"name": "cerchietto di metallo", "B": 0, "C": 1, "W": 0},
-    {"name": "bandana", "B": 1, "C": 1, "W": 0},
+    {"name": "bandana", "B": 0, "C": 1, "W": 0},
+    {"name": "cinta", "B": 0, "C": 1, "W": 0},
     {"name": "borsa", "B": 0, "C": 1, "W": 0}
   ],
   "Shoes": [
