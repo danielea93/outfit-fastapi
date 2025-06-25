@@ -1,6 +1,7 @@
 import json
 import itertools
 import requests
+import random
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.requests import Request
@@ -135,7 +136,10 @@ async def handle_alexa_request(request: Request):
                 }
             })
 
-        list_data = [{"text": outfit_str} for outfit_str in formatted[:5]]  # max 5 outfit
+        # Scegli casualmente max 5 outfit dalla lista completa
+        random_outfits = random.sample(formatted, k=min(5, len(formatted)))
+
+        list_data = [{"text": outfit_str} for outfit_str in random_outfits]
 
         apl_document = {
             "type": "APL",
