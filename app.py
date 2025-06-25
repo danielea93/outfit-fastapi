@@ -3,6 +3,7 @@ import itertools
 import requests
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+from fastapi.requests import Request
 
 app = FastAPI()
 
@@ -79,8 +80,6 @@ def get_outfits():
 def root():
     return {"message": "Server running, prova /outfits"}
 
-from fastapi.requests import Request
-
 @app.post("/alexa")
 async def handle_alexa_request(request: Request):
     data = await request.json()
@@ -104,7 +103,7 @@ async def handle_alexa_request(request: Request):
         Wd = calculate_Wd(temp, config["Wd_rules"])
         groups = ["Layer 1", "Layer 2", "Pants", "Accessories", "Shoes"]
         all_combinations = itertools.product(*(clothes_db[group] for group in groups))
-        
+
         outfits_filtered = []
         for combo in all_combinations:
             Btot = sum(item["B"] for item in combo)
@@ -117,9 +116,12 @@ async def handle_alexa_request(request: Request):
             if Wtot != Wd:
                 continue
             outfits_filtered.append(combo)
-        
-        formatted = format_outfits([(outfit, sum(i["B"] for i in outfit), sum(i["C"] for i in outfit), sum(i["W"] for i in outfit)) for outfit in outfits_filtered])
-        
+
+        formatted = format_outfits([
+            (outfit, sum(i["B"] for i in outfit), sum(i["C"] for i in outfit), sum(i["W"] for i in outfit))
+            for outfit in outfits_filtered
+        ])
+
         if not formatted:
             speech_text = "Non ho trovato nessun outfit adatto per oggi."
             return JSONResponse(content={
@@ -132,8 +134,7 @@ async def handle_alexa_request(request: Request):
                     "shouldEndSession": True
                 }
             })
-        
-        # Prepara la lista da mostrare (max 5 outfit)
+
         list_items = []
         for idx, outfit_str in enumerate(formatted[:5], start=1):
             list_items.append({
@@ -151,7 +152,7 @@ async def handle_alexa_request(request: Request):
             "response": {
                 "outputSpeech": {
                     "type": "PlainText",
-                    "text": ""  # Vuoto per non far parlare Alexa
+                    "text": ""  # Alexa non dice nulla, mostra solo
                 },
                 "directives": [
                     {
