@@ -47,8 +47,7 @@ def format_outfits(outfits):
         result.append(outfit_str)
     return result
 
-@app.get("/outfits")
-def get_outfits():
+def generate_filtered_outfits():
     temp = get_current_temperature(config["location"], config["openweather_api_key"])
     Wd = calculate_Wd(temp, config["Wd_rules"])
 
@@ -73,8 +72,12 @@ def get_outfits():
         for outfit in outfits_filtered
     ]
 
-    formatted = format_outfits(outfits_with_totals)
+    return outfits_with_totals, temp, Wd
 
+@app.get("/outfits")
+def get_outfits():
+    outfits_with_totals, temp, Wd = generate_filtered_outfits()
+    formatted = format_outfits(outfits_with_totals)
     return JSONResponse(content={"temperature": temp, "Wd": Wd, "outfits": formatted})
 
 @app.get("/")
@@ -85,52 +88,17 @@ def root():
 async def handle_alexa_request(request: Request):
     data = await request.json()
 
-    try:
-        intent_name = data["request"]["intent"]["name"]
-    except KeyError:
-        return JSONResponse(content={
-            "version": "1.0",
-            "response": {
-                "outputSpeech": {
-                    "type": "PlainText",
-                    "text": "Mi dispiace, non ho capito la richiesta."
-                },
-                "shouldEndSession": True
-            }
-        })
+    request_type = data["request"]["type"]
 
-    if intent_name == "GetOutfitsIntent":
-        temp = get_current_temperature(config["location"], config["openweather_api_key"])
-        Wd = calculate_Wd(temp, config["Wd_rules"])
-        groups = ["Layer 1", "Layer 2", "Pants", "Accessories", "Shoes"]
-        all_combinations = itertools.product(*(clothes_db[group] for group in groups))
-
-        outfits_filtered = []
-        for combo in all_combinations:
-            Btot = sum(item["B"] for item in combo)
-            if not (config["Bdmin"] <= Btot <= config["Bdmax"]):
-                continue
-            Ctot = sum(item["C"] for item in combo)
-            if Ctot > config["Cd"]:
-                continue
-            Wtot = sum(item["W"] for item in combo)
-            if Wtot != Wd:
-                continue
-            outfits_filtered.append(combo)
-
-        if not outfits_filtered:
-            speech_text = "Non ho trovato nessun outfit adatto per oggi."
+    if request_type == "LaunchRequest":
+        # Quando apri la skill, consigliamo subito un outfit a voce
+        outfits_with_totals, temp, Wd = generate_filtered_outfits()
+        formatted = format_outfits(outfits_with_totals)
+        if not formatted:
+            speech_text = "Mi dispiace, non ho trovato nessun outfit adatto per oggi."
         else:
-            chosen_outfit = random.choice(outfits_filtered)
-            parts = []
-            for i, group in enumerate(groups):
-                name = chosen_outfit[i]["name"]
-                if group == "Layer 2" and name.lower() == "nothing":
-                    continue
-                parts.append(name)
-            outfit_str = ", ".join(parts)
-            speech_text = f"Ti consiglio di indossare: {outfit_str}."
-
+            outfit_choice = random.choice(formatted)
+            speech_text = f"Oggi ti consiglio questo outfit: {outfit_choice}."
         return JSONResponse(content={
             "version": "1.0",
             "response": {
@@ -142,13 +110,59 @@ async def handle_alexa_request(request: Request):
             }
         })
 
+    elif request_type == "IntentRequest":
+        try:
+            intent_name = data["request"]["intent"]["name"]
+        except KeyError:
+            return JSONResponse(content={
+                "version": "1.0",
+                "response": {
+                    "outputSpeech": {
+                        "type": "PlainText",
+                        "text": "Mi dispiace, non ho capito la richiesta."
+                    },
+                    "shouldEndSession": True
+                }
+            })
+
+        if intent_name == "GetOutfitsIntent":
+            outfits_with_totals, temp, Wd = generate_filtered_outfits()
+            formatted = format_outfits(outfits_with_totals)
+            if not formatted:
+                speech_text = "Non ho trovato nessun outfit adatto per oggi."
+            else:
+                outfit_choice = random.choice(formatted)
+                speech_text = f"Oggi ti consiglio questo outfit: {outfit_choice}."
+            return JSONResponse(content={
+                "version": "1.0",
+                "response": {
+                    "outputSpeech": {
+                        "type": "PlainText",
+                        "text": speech_text
+                    },
+                    "shouldEndSession": True
+                }
+            })
+
+        else:
+            return JSONResponse(content={
+                "version": "1.0",
+                "response": {
+                    "outputSpeech": {
+                        "type": "PlainText",
+                        "text": "Intent non riconosciuto."
+                    },
+                    "shouldEndSession": True
+                }
+            })
+
     else:
         return JSONResponse(content={
             "version": "1.0",
             "response": {
                 "outputSpeech": {
                     "type": "PlainText",
-                    "text": "Intent non riconosciuto."
+                    "text": "Tipo di richiesta non supportato."
                 },
                 "shouldEndSession": True
             }
