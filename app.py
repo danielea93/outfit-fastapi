@@ -116,16 +116,19 @@ async def handle_alexa_request(request: Request):
     else:
         speech_text = "Mi dispiace, non ho capito la tua richiesta."
 
-    return JSONResponse({
-        "version": "1.0",
-        "response": {
-            "outputSpeech": {
-                "type": "PlainText",
-                "text": speech_text
-            },
-            "shouldEndSession": True
-        }
-    })
+response = {
+    "version": "1.0",
+    "response": {
+        "outputSpeech": {
+            "type": "PlainText",
+            "text": speech_text
+        },
+        "shouldEndSession": True
+    }
+}
+print("Risposta Alexa:", response)  # <-- questa riga la aggiungi
+return JSONResponse(response)
+
 
 @app.get("/")
 def root():
