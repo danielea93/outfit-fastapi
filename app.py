@@ -78,45 +78,54 @@ def get_outfits():
 @app.post("/alexa")
 async def handle_alexa_request(request: Request):
     body = await request.json()
-    print("Richiesta da Alexa:", body)
+    print("Richiesta da Alexa:", json.dumps(body, indent=2))
 
-    intent = body.get("request", {}).get("intent", {}).get("name")
+    request_type = body.get("request", {}).get("type")
 
-    if intent == "GetOutfitIntent":
-        try:
-            temp = get_current_temperature(config["location"], config["openweather_api_key"])
-            Wd = calculate_Wd(temp, config["Wd_rules"])
-            groups = ["Layer 1", "Layer 2", "Pants", "Accessories", "Shoes"]
-            all_combinations = itertools.product(*(clothes_db[group] for group in groups))
+    if request_type == "LaunchRequest":
+        speech_text = (
+            "Benvenuto nella skill Mostra Outfit! "
+            "Puoi chiedermi di consigliarti un outfit dicendo, per esempio, mostrami un outfit."
+        )
+    
+    elif request_type == "IntentRequest":
+        intent = body.get("request", {}).get("intent", {}).get("name")
+        if intent == "GetOutfitIntent":
+            try:
+                temp = get_current_temperature(config["location"], config["openweather_api_key"])
+                Wd = calculate_Wd(temp, config["Wd_rules"])
+                groups = ["Layer 1", "Layer 2", "Pants", "Accessories", "Shoes"]
+                all_combinations = itertools.product(*(clothes_db[group] for group in groups))
 
-            outfits_filtered = []
-            for combo in all_combinations:
-                Btot = sum(item["B"] for item in combo)
-                if not (config["Bdmin"] <= Btot <= config["Bdmax"]):
-                    continue
-                Ctot = sum(item["C"] for item in combo)
-                if Ctot > config["Cd"]:
-                    continue
-                Wtot = sum(item["W"] for item in combo)
-                if Wtot != Wd:
-                    continue
-                outfits_filtered.append(combo)
+                outfits_filtered = []
+                for combo in all_combinations:
+                    Btot = sum(item["B"] for item in combo)
+                    if not (config["Bdmin"] <= Btot <= config["Bdmax"]):
+                        continue
+                    Ctot = sum(item["C"] for item in combo)
+                    if Ctot > config["Cd"]:
+                        continue
+                    Wtot = sum(item["W"] for item in combo)
+                    if Wtot != Wd:
+                        continue
+                    outfits_filtered.append(combo)
 
-            outfits_with_totals = [
-                (outfit, sum(i["B"] for i in outfit), sum(i["C"] for i in outfit), sum(i["W"] for i in outfit))
-                for outfit in outfits_filtered
-            ]
+                outfits_with_totals = [
+                    (outfit, sum(i["B"] for i in outfit), sum(i["C"] for i in outfit), sum(i["W"] for i in outfit))
+                    for outfit in outfits_filtered
+                ]
 
-            formatted = format_outfits(outfits_with_totals)
-            speech_text = (
-                f"La temperatura attuale è di {round(temp)} gradi. "
-                + (f"Ti consiglio: {formatted[0]}" if formatted else "Purtroppo non ho trovato outfit adatti.")
-            )
-
-        except Exception as e:
-            speech_text = f"Si è verificato un errore: {str(e)}"
+                formatted = format_outfits(outfits_with_totals)
+                speech_text = (
+                    f"La temperatura attuale è di {round(temp)} gradi. "
+                    + (f"Ti consiglio: {formatted[0]}" if formatted else "Purtroppo non ho trovato outfit adatti.")
+                )
+            except Exception as e:
+                speech_text = f"Si è verificato un errore: {str(e)}"
+        else:
+            speech_text = "Mi dispiace, non ho capito la tua richiesta."
     else:
-        speech_text = "Mi dispiace, non ho capito la tua richiesta."
+        speech_text = "Mi dispiace, tipo di richiesta non supportato."
 
     response = {
         "version": "1.0",
@@ -128,8 +137,8 @@ async def handle_alexa_request(request: Request):
             "shouldEndSession": True
         }
     }
-    print("Risposta Alexa:", response)
-    return JSONResponse(content=response)  # <-- qui content=response
+    print("Risposta Alexa:", json.dumps(response, indent=2))
+    return JSONResponse(content=response)
 
 @app.get("/")
 def root():
