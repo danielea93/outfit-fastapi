@@ -1,36 +1,36 @@
 {
   "Layer 1": [
-    {"name": "black t shirt", "B": 0, "C": 0, "W": 0},
-    {"name": "grey t shirt", "B": 0, "C": 0, "W": 0},
-    {"name": "black white contrast stitching t shirt", "B": 0, "C": 0, "W": 0},
-    {"name": "dark grey melange t shirt", "B": 0, "C": 0, "W": 0}
+    {"name": "t shirt nera", "B": 0, "C": 0, "W": 0},
+    {"name": "t shirt grigia", "B": 0, "C": 0, "W": 0},
+    {"name": "t shirt nera con cuciture bianche a contrasto", "B": 0, "C": 0, "W": 0},
+    {"name": "t shirt grigio scuro melange", "B": 0, "C": 0, "W": 0}
   ],
   "Layer 2": [
-    {"name": "nothing", "B": 0, "C": 0, "W": 0},
-    {"name": "black t shirt", "B": 0, "C": 0, "W": 1},
-    {"name": "grey t shirt", "B": 0, "C": 0, "W": 1},
-    {"name": "black white contrast stitching t shirt", "B": 0, "C": 0, "W": 1},
-    {"name": "white polo", "B": 0, "C": 0, "W": 1},
-    {"name": "black polo", "B": 0, "C": 0, "W": 1},
-    {"name": "grey polo", "B": 0, "C": 0, "W": 1},
-    {"name": "dark grey melange polo", "B": 0, "C": 0, "W": 1}
+    {"name": "nulla sopra", "B": 0, "C": 0, "W": 0},
+    {"name": "t shirt nera", "B": 0, "C": 0, "W": 1},
+    {"name": "t shirt grigia", "B": 0, "C": 0, "W": 1},
+    {"name": "t shirt nera con cuciture bianche a contrasto", "B": 0, "C": 0, "W": 1},
+    {"name": "polo bianca", "B": 0, "C": 0, "W": 1},
+    {"name": "polo nera", "B": 0, "C": 0, "W": 1},
+    {"name": "polo grigia", "B": 0, "C": 0, "W": 1},
+    {"name": "polo grigio scuro melange", "B": 0, "C": 0, "W": 1}
   ],
   "Pants": [
-    {"name": "light wash blue denim", "B": 0, "C": 0, "W": 0},
-    {"name": "medium wash blue denim", "B": 0, "C": 0, "W": 0},
-    {"name": "dark wash blue denim", "B": 0, "C": 0, "W": 0}
+    {"name": "jeans chiari", "B": 0, "C": 0, "W": 0},
+    {"name": "jeans medi", "B": 0, "C": 0, "W": 0},
+    {"name": "jeans scuri", "B": 0, "C": 0, "W": 0}
   ],
   "Accessories": [
-    {"name": "nothing", "B": 0, "C": 0, "W": 0},
-    {"name": "glasses", "B": 0, "C": 1, "W": 0},
-    {"name": "sunglasses", "B": 0, "C": 1, "W": 0},
-    {"name": "headband", "B": 0, "C": 1, "W": 0},
+    {"name": "nessun accessorio", "B": 0, "C": 0, "W": 0},
+    {"name": "occhiali da vista", "B": 0, "C": 1, "W": 0},
+    {"name": "occhiali da sole", "B": 0, "C": 1, "W": 0},
+    {"name": "cerchietto di metallo", "B": 0, "C": 1, "W": 0},
     {"name": "bandana", "B": 1, "C": 1, "W": 0},
-    {"name": "bag", "B": 0, "C": 1, "W": 0}
+    {"name": "borsa", "B": 0, "C": 1, "W": 0}
   ],
   "Shoes": [
-    {"name": "buckle winklepickers", "B": -1, "C": 1, "W": 0},
-    {"name": "square toe loafers", "B": -1, "C": 1, "W": 0},
-    {"name": "pointy chelsea boots", "B": -1, "C": 1, "W": 0}
+    {"name": "scarpe con cinghie", "B": -1, "C": 1, "W": 0},
+    {"name": "mocassini squadrati", "B": -1, "C": 1, "W": 0},
+    {"name": "chelsea boots a punta", "B": -1, "C": 1, "W": 0}
   ]
 }
