@@ -71,7 +71,6 @@ def generate_filtered_outfits():
         (outfit, sum(i["B"] for i in outfit), sum(i["C"] for i in outfit), sum(i["W"] for i in outfit))
         for outfit in outfits_filtered
     ]
-
     return outfits_with_totals, temp, Wd
 
 @app.get("/outfits")
@@ -88,17 +87,15 @@ def root():
 async def handle_alexa_request(request: Request):
     data = await request.json()
 
-    request_type = data["request"]["type"]
-
+    request_type = data.get("request", {}).get("type", "")
     if request_type == "LaunchRequest":
-        # Quando apri la skill, consigliamo subito un outfit a voce
         outfits_with_totals, temp, Wd = generate_filtered_outfits()
         formatted = format_outfits(outfits_with_totals)
         if not formatted:
             speech_text = "Mi dispiace, non ho trovato nessun outfit adatto per oggi."
         else:
             outfit_choice = random.choice(formatted)
-            speech_text = f"Oggi ti consiglio questo outfit: {outfit_choice}."
+            speech_text = outfit_choice  # SOLO outfit, niente prefisso
         return JSONResponse(content={
             "version": "1.0",
             "response": {
@@ -110,51 +107,38 @@ async def handle_alexa_request(request: Request):
             }
         })
 
-    elif request_type == "IntentRequest":
-        try:
-            intent_name = data["request"]["intent"]["name"]
-        except KeyError:
-            return JSONResponse(content={
-                "version": "1.0",
-                "response": {
-                    "outputSpeech": {
-                        "type": "PlainText",
-                        "text": "Mi dispiace, non ho capito la richiesta."
-                    },
-                    "shouldEndSession": True
-                }
-            })
+    try:
+        intent_name = data["request"]["intent"]["name"]
+    except KeyError:
+        return JSONResponse(content={
+            "version": "1.0",
+            "response": {
+                "outputSpeech": {
+                    "type": "PlainText",
+                    "text": "Mi dispiace, non ho capito la richiesta."
+                },
+                "shouldEndSession": True
+            }
+        })
 
-        if intent_name == "GetOutfitsIntent":
-            outfits_with_totals, temp, Wd = generate_filtered_outfits()
-            formatted = format_outfits(outfits_with_totals)
-            if not formatted:
-                speech_text = "Non ho trovato nessun outfit adatto per oggi."
-            else:
-                outfit_choice = random.choice(formatted)
-                speech_text = f"Oggi ti consiglio questo outfit: {outfit_choice}."
-            return JSONResponse(content={
-                "version": "1.0",
-                "response": {
-                    "outputSpeech": {
-                        "type": "PlainText",
-                        "text": speech_text
-                    },
-                    "shouldEndSession": True
-                }
-            })
-
+    if intent_name == "GetOutfitsIntent":
+        outfits_with_totals, temp, Wd = generate_filtered_outfits()
+        formatted = format_outfits(outfits_with_totals)
+        if not formatted:
+            speech_text = "Non ho trovato nessun outfit adatto per oggi."
         else:
-            return JSONResponse(content={
-                "version": "1.0",
-                "response": {
-                    "outputSpeech": {
-                        "type": "PlainText",
-                        "text": "Intent non riconosciuto."
-                    },
-                    "shouldEndSession": True
-                }
-            })
+            outfit_choice = random.choice(formatted)
+            speech_text = outfit_choice  # SOLO outfit, niente prefisso
+        return JSONResponse(content={
+            "version": "1.0",
+            "response": {
+                "outputSpeech": {
+                    "type": "PlainText",
+                    "text": speech_text
+                },
+                "shouldEndSession": True
+            }
+        })
 
     else:
         return JSONResponse(content={
@@ -162,7 +146,7 @@ async def handle_alexa_request(request: Request):
             "response": {
                 "outputSpeech": {
                     "type": "PlainText",
-                    "text": "Tipo di richiesta non supportato."
+                    "text": "Intent non riconosciuto."
                 },
                 "shouldEndSession": True
             }
