@@ -78,7 +78,7 @@ def get_outfits():
 @app.post("/alexa")
 async def handle_alexa_request(request: Request):
     body = await request.json()
-    print("Richiesta da Alexa:", body)  # <-- stampa la richiesta che arriva da Alexa
+    print("Richiesta da Alexa:", body)
 
     intent = body.get("request", {}).get("intent", {}).get("name")
 
@@ -128,8 +128,8 @@ async def handle_alexa_request(request: Request):
             "shouldEndSession": True
         }
     }
-    print("Risposta Alexa:", response)  # puoi lasciare anche questa per vedere cosa mandi ad Alexa
-    return JSONResponse(response)
+    print("Risposta Alexa:", response)
+    return JSONResponse(content=response)  # <-- qui content=response
 
 @app.get("/")
 def root():
