@@ -1,7 +1,7 @@
 import json
 import itertools
 import requests
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 app = FastAPI()
@@ -25,11 +25,10 @@ def calculate_Wd(temp, Wd_rules):
     for rule in Wd_rules:
         if rule["min"] <= temp < rule["max"]:
             return rule["Wd"]
-    # fallback se temperatura è fuori range (es. sotto min o sopra max)
     if temp < Wd_rules[0]["min"]:
         return Wd_rules[0]["Wd"]
     if temp >= Wd_rules[-1]["max"]:
-        return 0  # come richiesto, Wd=0 per temp > 30
+        return 0
     return 0
 
 def format_outfits(outfits):
@@ -67,7 +66,6 @@ def get_outfits():
             continue
         outfits_filtered.append(combo)
 
-    # Creiamo le tuple con i totali per format_outfits
     outfits_with_totals = [
         (outfit, sum(i["B"] for i in outfit), sum(i["C"] for i in outfit), sum(i["W"] for i in outfit))
         for outfit in outfits_filtered
@@ -77,7 +75,58 @@ def get_outfits():
 
     return JSONResponse(content={"temperature": temp, "Wd": Wd, "outfits": formatted})
 
+@app.post("/alexa")
+async def handle_alexa_request(request: Request):
+    body = await request.json()
+    intent = body.get("request", {}).get("intent", {}).get("name")
+
+    if intent == "GetOutfitIntent":
+        try:
+            temp = get_current_temperature(config["location"], config["openweather_api_key"])
+            Wd = calculate_Wd(temp, config["Wd_rules"])
+            groups = ["Layer 1", "Layer 2", "Pants", "Accessories", "Shoes"]
+            all_combinations = itertools.product(*(clothes_db[group] for group in groups))
+
+            outfits_filtered = []
+            for combo in all_combinations:
+                Btot = sum(item["B"] for item in combo)
+                if not (config["Bdmin"] <= Btot <= config["Bdmax"]):
+                    continue
+                Ctot = sum(item["C"] for item in combo)
+                if Ctot > config["Cd"]:
+                    continue
+                Wtot = sum(item["W"] for item in combo)
+                if Wtot != Wd:
+                    continue
+                outfits_filtered.append(combo)
+
+            outfits_with_totals = [
+                (outfit, sum(i["B"] for i in outfit), sum(i["C"] for i in outfit), sum(i["W"] for i in outfit))
+                for outfit in outfits_filtered
+            ]
+
+            formatted = format_outfits(outfits_with_totals)
+            speech_text = (
+                f"La temperatura attuale è di {round(temp)} gradi. "
+                + (f"Ti consiglio: {formatted[0]}" if formatted else "Purtroppo non ho trovato outfit adatti.")
+            )
+
+        except Exception as e:
+            speech_text = f"Si è verificato un errore: {str(e)}"
+    else:
+        speech_text = "Mi dispiace, non ho capito la tua richiesta."
+
+    return JSONResponse({
+        "version": "1.0",
+        "response": {
+            "outputSpeech": {
+                "type": "PlainText",
+                "text": speech_text
+            },
+            "shouldEndSession": True
+        }
+    })
+
 @app.get("/")
 def root():
     return {"message": "Server running, prova /outfits"}
-
