@@ -160,14 +160,16 @@ async def handle_alexa_request(request: Request):
                                 "height": "80vh",
                                 "width": "100%",
                                 "data": "${payload.list}",
-                                "item": {
-                                    "type": "Text",
-                                    "text": "${data.text}",
-                                    "style": "textStylePrimary2",
-                                    "paddingTop": 10,
-                                    "paddingBottom": 10,
-                                    "fontSize": "20dp"
-                                }
+                                "items": [
+                                    {
+                                        "type": "Text",
+                                        "text": "${data.text}",
+                                        "style": "textStylePrimary2",
+                                        "paddingTop": 10,
+                                        "paddingBottom": 10,
+                                        "fontSize": "20dp"
+                                    }
+                                ]
                             }
                         ],
                         "padding": 20
