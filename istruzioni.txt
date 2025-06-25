@@ -1,15 +1,3 @@
-Installare python, ricordandoti di spuntare la casella add to PATH:
-https://www.python.org/downloads/
-Far partire il terminale di python e trovare il percorso completo usando questa stringa:
-import sys
-print(sys.executable)
-Questo dovrebbe restituire una cosa del genere: C:\Users\TuoUtente\AppData\Local\Programs\Python\Python310\python.exe
-Incollare questo percorso completo nel terminale (non quello di python, quello proprio del computer).
-Se si usa powershell, il percorso dovrebbe essere scritto in quest'altro modo: 
-& "C:\Users\daniele.angelone\AppData\Local\Programs\Python\Python313\python.exe" -m pip install fastapi uvicorn requests
-Poi, in questa cartella, cliccare sul link della directory e scrivere 'Powershell'(se si usa powershell, altrimenti bisogna scrivere 'cmd', o altro metodo è di aprire il terminale e scrivere 'cd' seguito dal percorso della cartella, es. 'cd percorso/della/cartella').
-Quando si apre il terminale, inserire questo:
-uvicorn app:app --reload
-
-Poi aprire questo link su browser:
-http://127.0.0.1:8000/outfits
+se si vuole modificare il database, allora modificare il file clothes_db (attenzione a non modificare il titolo, o si fotte tutto).
+se si vuole modificare lo script, allora bisogna modificare app.py, poi commit changes e poi rifare il deploy branch su heroku
+per controllare tutte le combinazioni, questo è il link: https://fashion-calculator-e5c26ef933eb.herokuapp.com/outfits
