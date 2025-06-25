@@ -135,17 +135,48 @@ async def handle_alexa_request(request: Request):
                 }
             })
 
-        list_items = []
-        for idx, outfit_str in enumerate(formatted[:5], start=1):
-            list_items.append({
-                "token": str(idx),
-                "textContent": {
-                    "primaryText": {
-                        "type": "PlainText",
-                        "text": outfit_str
+        list_data = [{"text": outfit_str} for outfit_str in formatted[:5]]  # max 5 outfit
+
+        apl_document = {
+            "type": "APL",
+            "version": "1.7",
+            "mainTemplate": {
+                "parameters": ["payload"],
+                "items": [
+                    {
+                        "type": "Container",
+                        "items": [
+                            {
+                                "type": "Text",
+                                "text": "Outfit consigliati",
+                                "style": "textStylePrimary1",
+                                "width": "100%",
+                                "textAlign": "center",
+                                "paddingBottom": 20
+                            },
+                            {
+                                "type": "Sequence",
+                                "scrollDirection": "vertical",
+                                "height": "80vh",
+                                "width": "100%",
+                                "data": "${payload.list}",
+                                "items": [
+                                    {
+                                        "type": "Text",
+                                        "text": "${data.text}",
+                                        "style": "textStylePrimary2",
+                                        "paddingTop": 10,
+                                        "paddingBottom": 10,
+                                        "fontSize": "20dp"
+                                    }
+                                ]
+                            }
+                        ],
+                        "padding": 20
                     }
-                }
-            })
+                ]
+            }
+        }
 
         return JSONResponse(content={
             "version": "1.0",
@@ -156,11 +187,13 @@ async def handle_alexa_request(request: Request):
                 },
                 "directives": [
                     {
-                        "type": "Display.RenderTemplate",
-                        "template": {
-                            "type": "ListTemplate1",
-                            "title": "Outfit consigliati",
-                            "listItems": list_items
+                        "type": "Alexa.Presentation.APL.RenderDocument",
+                        "token": "outfitToken",
+                        "document": apl_document,
+                        "datasources": {
+                            "payload": {
+                                "list": list_data
+                            }
                         }
                     }
                 ],
