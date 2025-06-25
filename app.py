@@ -1,7 +1,7 @@
 import json
 import itertools
-import requests
 import random
+import requests
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.requests import Request
@@ -118,89 +118,26 @@ async def handle_alexa_request(request: Request):
                 continue
             outfits_filtered.append(combo)
 
-        formatted = format_outfits([
-            (outfit, sum(i["B"] for i in outfit), sum(i["C"] for i in outfit), sum(i["W"] for i in outfit))
-            for outfit in outfits_filtered
-        ])
-
-        if not formatted:
+        if not outfits_filtered:
             speech_text = "Non ho trovato nessun outfit adatto per oggi."
-            return JSONResponse(content={
-                "version": "1.0",
-                "response": {
-                    "outputSpeech": {
-                        "type": "PlainText",
-                        "text": speech_text
-                    },
-                    "shouldEndSession": True
-                }
-            })
-
-        # Scegli casualmente max 5 outfit dalla lista completa
-        random_outfits = random.sample(formatted, k=min(5, len(formatted)))
-
-        list_data = [{"text": outfit_str} for outfit_str in random_outfits]
-
-        apl_document = {
-            "type": "APL",
-            "version": "1.7",
-            "mainTemplate": {
-                "parameters": ["payload"],
-                "items": [
-                    {
-                        "type": "Container",
-                        "items": [
-                            {
-                                "type": "Text",
-                                "text": "Outfit consigliati",
-                                "style": "textStylePrimary1",
-                                "width": "100%",
-                                "textAlign": "center",
-                                "paddingBottom": 20
-                            },
-                            {
-                                "type": "Sequence",
-                                "scrollDirection": "vertical",
-                                "height": "80vh",
-                                "width": "100%",
-                                "data": "${payload.list}",
-                                "items": [
-                                    {
-                                        "type": "Text",
-                                        "text": "${data.text}",
-                                        "style": "textStylePrimary2",
-                                        "paddingTop": 10,
-                                        "paddingBottom": 10,
-                                        "fontSize": "20dp"
-                                    }
-                                ]
-                            }
-                        ],
-                        "padding": 20
-                    }
-                ]
-            }
-        }
+        else:
+            chosen_outfit = random.choice(outfits_filtered)
+            parts = []
+            for i, group in enumerate(groups):
+                name = chosen_outfit[i]["name"]
+                if group == "Layer 2" and name.lower() == "nothing":
+                    continue
+                parts.append(name)
+            outfit_str = ", ".join(parts)
+            speech_text = f"Ti consiglio di indossare: {outfit_str}."
 
         return JSONResponse(content={
             "version": "1.0",
             "response": {
                 "outputSpeech": {
                     "type": "PlainText",
-                    "text": ""  # Alexa non dice nulla, mostra solo
+                    "text": speech_text
                 },
-                "directives": [
-                    {
-                        "type": "Alexa.Presentation.APL.RenderDocument",
-                        "token": "outfitToken",
-                        "document": apl_document,
-                        "datasources": {
-                            "payload": {
-                                "list": list_data
-                            }
-                        }
-                    }
-                ],
                 "shouldEndSession": True
             }
         })
